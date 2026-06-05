@@ -39,7 +39,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, set, get, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCzeW0zLkD6FNXpbxn7U9M5rilDQ8cEnJU",
@@ -58,6 +58,7 @@
         window.db = db;
         window.dbRef = ref;
         window.dbSet = set;
+        window.dbGet = get; // Dubbisuuf kan dabalame
         window.dbOnValue = onValue;
         
         initApp();
@@ -279,7 +280,7 @@
         function closeModal() { document.getElementById('info-modal').classList.add('hidden'); }
 
         function showAbout() {
-            const content = `<div class="bg-gradient-to-br from-indigo-900 to-blue-800 text-white p-10"><h2 class="text-4xl font-black mb-4 flex items-center gap-3"><i class="fa fa-info-circle text-yellow-400"></i> About Deebii Market</h2><p class="text-blue-100 text-lg italic">"Connecting Borana Pastoralists to Fair Market Intelligence."</p></div><div class="p-10 space-y-8"><section class="grid md:grid-cols-2 gap-8"><div><h3 class="text-xl font-bold text-blue-900 mb-3 border-b-2 border-yellow-500 inline-block">Maaliif Deebii? (Why Deebii?)</h3><p class="text-gray-600 leading-relaxed"><strong>Deebii Market</strong> systemii ragaa gabaa beeyladaa battalatti (real-time) wal-qunnamsiisu yoo ta'u, daldala beeyladaa Booranaa ammayyeessuuf kan qophaaye dha. Systemiin kun dallaalaa gidduudhaa balleessuun horsiise bulaan gatii haqaa akka argatu gargaara.</p></div><div><h3 class="text-xl font-bold text-blue-900 mb-3 border-b-2 border-yellow-500 inline-block">Who Built It?</h3><p class="text-gray-600 leading-relaxed">Systemiin kun kan ijaarame <strong>Kajela Hambisa</strong>, Software Developer, Author, Teacher, Graphics Designer, Web developer fi Market Specialist, dhaan yoo ta'u, kaayyoon isaa teeknoolojii fayyadamuun jireenya hawaasaa fooyyeessuu dha.</p></div></section></div>`;
+            const content = `<div class="bg-gradient-to-br from-indigo-900 to-blue-800 text-white p-10"><h2 class="text-4xl font-black mb-4 flex items-center gap-3"><i class="fa fa-info-circle text-yellow-400"></i> About Deebii Market</h2><p class="text-blue-100 text-lg italic">"Connecting Borana Pastoralists to Fair Market Intelligence."</p></div><div class="p-10 space-y-8"><section class="grid md:grid-cols-2 gap-8"><div><h3 class="text-xl font-bold text-blue-900 mb-3 border-b-2 border-yellow-500 inline-block">Maaliif Deebii? (Why Deebii?)</h3><p class="text-gray-600 leading-relaxed"><strong>Deebii Market</strong> systemii ragaa gabaa beeyladaa battalatti (real-time) wal-qunnamsiisu yoo ta'u, daldala beeyladaa Booranaa ammayyeessuuf kan qophaaye dha. Systemiin kun dallaalaa gidduudhaa balleessuun horsiise bulaan gatii haqaa akka argatu gargaara.</p></div><div><h3 class="text-xl font-bold text-blue-900 mb-3 border-b-2 border-yellow-500 inline-block">Who Built It?</h3><p class="text-gray-600 leading-relaxed">Systemiin kun kan ijaarame <strong>Kajela Hambisa</strong> dhaan yoo ta'u, kaayyoon isaa teeknoolojii fayyadamuun jireenya hawaasaa fooyyeessuu dha.</p></div></section></div>`;
             openModal(content);
         }
 
@@ -362,7 +363,6 @@
             const activeWoreda = document.getElementById('current-location').innerText;
             const woredaKey = activeWoreda.replace(/\s+/g, '_');
             
-            // Sync Analysis Data
             window.dbOnValue(window.dbRef(window.db, 'analysis/' + woredaKey), (snap) => {
                 const a = snap.val() || { supply: "Olaana", demand: "Giddu-galeessa", trend: "Dhaabbataa" };
                 document.getElementById('ana-supply').innerText = a.supply;
@@ -370,7 +370,6 @@
                 document.getElementById('ana-trend').innerText = a.trend;
             });
 
-            // Sync Market Cards & Graph
             const dataRef = window.dbRef(window.db, 'markets/' + woredaKey);
             window.dbOnValue(dataRef, (snapshot) => {
                 const liveData = snapshot.val() || {};
@@ -382,8 +381,6 @@
                 marketDataTemplate.forEach(item => {
                     if (filter !== 'All' && item.category !== filter) return;
 
-                    // MAQAA JEEQAMU DHOWWUUF: Key keessatti Category daballee ID addaa uumna.
-                    // Fakkeenya: Loon_Hawwicha vs Hoolaa_Hawwicha
                     const uniqueKey = `${item.category}_${item.sub}`.replace(/[\s\/\.\']/g, '_');
                     const prices = liveData[uniqueKey] || { min: 0, mid: 0, max: 0 };
                     
@@ -401,13 +398,16 @@
                         "Date": new Date().toLocaleDateString()
                     });
                     
+                    const safeCategory = item.category.replace(/'/g, "\\'");
+                    const safeSub = item.sub.replace(/'/g, "\\'");
+
                     grid.innerHTML += `
                         <div class="market-card ${item.class} p-6 relative overflow-hidden shadow-sm border border-gray-100">
                             <div class="flex justify-between items-start mb-4">
                                 <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-md overflow-hidden border-2 border-white">
                                     <img src="${imgName}" alt="${item.category}" class="w-full h-full object-cover">
                                 </div>
-                                <button onclick="updateData('${item.category}', '${item.sub}')" 
+                                <button onclick="updateData('${safeCategory}', '${safeSub}')" 
                                     class="text-[10px] font-black py-1 px-4 rounded-full transition-all shadow-sm ${canEdit ? 'bg-white text-blue-700 hover:scale-105' : 'bg-gray-100 text-gray-400 cursor-not-allowed'}">
                                     ${canEdit ? '<i class="fa fa-pen mr-1"></i> EDIT' : '<i class="fa fa-lock mr-1"></i> READ'}
                                 </button>
@@ -437,25 +437,41 @@
             const woredaKey = activeWoreda.replace(/\s+/g, '_');
             const uniqueKey = `${category}_${sub}`.replace(/[\s\/\.\']/g, '_');
 
-            const min = parseInt(prompt(`Gatii Xiqqaa (MIN) ${category} - ${sub} galchi:`, "0")) || 0;
-            const mid = parseInt(prompt(`Gatii Giddu-galeessaa (AVG) ${category} - ${sub} galchi:`, "0")) || 0;
-            const max = parseInt(prompt(`Gatii Ol-aanaa (MAX) ${category} - ${sub} galchi:`, "0")) || 0;
+            // 1. Jalqaba daata Firebase irra jiru kalleattiidhaan ni dubbisna (Get old values)
+            window.dbGet(window.dbRef(window.db, `markets/${woredaKey}/${uniqueKey}`)).then((snapshot) => {
+                const currentPrices = snapshot.val() || { min: 0, mid: 0, max: 0 };
 
-            if (min > 0 || mid > 0 || max > 0) {
+                // 2. Prompt irratti gatii duraan ture akka default-tti sitti agarsiisa
+                const promptMin = prompt(`Gatii Xiqqaa (MIN) ${category} - ${sub} galchi:`, currentPrices.min);
+                const promptMid = prompt(`Gatii Giddu-galeessaa (AVG) ${category} - ${sub} galchi:`, currentPrices.mid);
+                const promptMax = prompt(`Gatii Ol-aanaa (MAX) ${category} - ${sub} galchi:`, currentPrices.max);
+
+                // 3. User-n Cancel yoo godhe ragaan duraanii akka hin badne ittisa (Fallback rules)
+                const min = (promptMin === null || promptMin === "") ? currentPrices.min : (parseInt(promptMin) || 0);
+                const mid = (promptMid === null || promptMid === "") ? currentPrices.mid : (parseInt(promptMid) || 0);
+                const max = (promptMax === null || promptMax === "") ? currentPrices.max : (parseInt(promptMax) || 0);
+
+                // 4. Firebase irratti dibbisee update godha
                 window.dbSet(window.dbRef(window.db, `markets/${woredaKey}/${uniqueKey}`), { min, mid, max })
                 .then(() => alert("Ragaan milkiidhaan galmaa'era!"))
                 .catch(err => alert("Rakkoon uumame: " + err.message));
-            }
+            }).catch((err) => {
+                alert("Ragaa dubbisuu irratti rakkoon uumame: " + err.message);
+            });
         }
 
         function quickUpdate(field) {
             if(!currentUser) return;
             const activeWoreda = document.getElementById('current-location').innerText;
             const woredaKey = activeWoreda.replace(/\s+/g, '_');
-            const val = prompt(`Haala ${field} haaraa galchi:`);
-            if(val) {
-                window.dbSet(window.dbRef(window.db, `analysis/${woredaKey}/${field}`), val);
-            }
+            
+            window.dbGet(window.dbRef(window.db, `analysis/${woredaKey}/${field}`)).then((snapshot) => {
+                const currentVal = snapshot.val() || "";
+                const val = prompt(`Haala ${field} haaraa galchi:`, currentVal);
+                if (val !== null && val !== "") {
+                    window.dbSet(window.dbRef(window.db, `analysis/${woredaKey}/${field}`), val);
+                }
+            });
         }
 
         function updateAnalysis() {
@@ -468,8 +484,8 @@
             if (currentExcelData.length === 0) return alert("Ragaan download ta'u hin jiru!");
             const worksheet = XLSX.utils.json_to_sheet(currentExcelData);
             const workbook = XLSX.utils.book_new();
-            XXLSX.utils.book_append_sheet(workbook, worksheet, "Market Data");
-            XXLSX.writeFile(workbook, `Deebii_Market_${document.getElementById('current-location').innerText}.xlsx`);
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Market Data");
+            XLSX.writeFile(workbook, `Deebii_Market_${document.getElementById('current-location').innerText}.xlsx`);
         }
     </script>
 </body>
