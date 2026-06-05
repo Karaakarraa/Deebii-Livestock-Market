@@ -60,7 +60,6 @@
         window.dbSet = set;
         window.dbOnValue = onValue;
         
-        // Initialize App after Firebase loads
         initApp();
     </script>
 
@@ -158,7 +157,7 @@
                                 <i class="fa fa-pen mr-1"></i> EDIT ALL
                             </button>
                         </div>
-                        <p class="text-lg font-bold mb-4">Haala gabaa <span id="ana-name" class="text-yellow-400">Yabelo</span> har'aa:</p>
+                        <p class="text-lg font-bold mb-4">Haala gabaa <span id="ana-name" class="text-yellow-400">Yabelo Woreda</span> har'aa:</p>
                         <div class="grid grid-cols-3 gap-2">
                             <button onclick="quickUpdate('supply')" class="text-center p-2 rounded-xl hover:bg-white/10 transition group">
                                 <p class="text-[9px] uppercase opacity-60 mb-1 group-hover:text-yellow-400">Supply</p>
@@ -218,7 +217,7 @@
     <script>
         let currentUser = null;
         let currentExcelData = [];
-        let myChart = null; // Global chart instance
+        let myChart = null;
 
         const users = {
             "admin_master": {pass: "admin@2026", role: "admin", woreda: "All"},
@@ -285,12 +284,12 @@
         }
 
         function showHelp() {
-            const content = `<div class="bg-gradient-to-br from-yellow-500 to-orange-400 text-white p-10"><h2 class="text-4xl font-black mb-4 flex items-center gap-3"><i class="fa fa-question-circle"></i> Help & Usage Guide</h2><p class="text-yellow-100 text-lg">Systemii kana akkamiin fayyadamna?</p></div><div class="p-10"><div class="grid md:grid-cols-3 gap-6"><div class="p-6 bg-white border-t-4 border-blue-900 rounded-xl shadow-md"><div class="text-3xl mb-4">🔍</div><h4 class="font-bold mb-2">1. Gatii Ilaaluuf</h4><p class="text-xs text-gray-500">Gara bitaa (Sidebar) irraa aanaa kee filadhu. Battaluma sana gatii beeyladaa aanaa sanaa ni argita. Edit kan jedhu tuquun gatii xiqqaa, gatii giddugaleessaafi gatii guddaa walduraa duubaan altokkotti yeroon sigaafatu galchitee ok jetta.</p></div><div class="p-6 bg-white border-t-4 border-blue-900 rounded-xl shadow-md"><div class="text-3xl mb-4">⚙️</div><h4 class="font-bold mb-2">2. Filter Gochuuf</h4><p class="text-xs text-gray-500">Filter beeyladaa (Loon, Hoolaa, re'ee, gaala, lukkuu naannoo fi lukkuu fooyya'aa) gubbaa jiruun beeylada barbaadde qofa adda baasii ilaali. Beeyladotni hundi category waan qabaniif sirriitti hubannaan ilaali. yoo hubachuu dadhabde 09101669 tti bilbili. Hojii Gaarii!!</p></div><div class="p-6 bg-white border-t-4 border-blue-900 rounded-xl shadow-md"><div class="text-3xl mb-4">🔐</div><h4 class="font-bold mb-2">3. Admin Login</h4><p class="text-xs text-gray-500">Data Clerks-onni qofti username fi password isaaniin seenanii gatii jijjiiruu danda'u.</p></div></div></div>`;
+            const content = `<div class="bg-gradient-to-br from-yellow-500 to-orange-400 text-white p-10"><h2 class="text-4xl font-black mb-4 flex items-center gap-3"><i class="fa fa-question-circle"></i> Help & Usage Guide</h2><p class="text-yellow-100 text-lg">Systemii kana akkamiin fayyadamna?</p></div><div class="p-10"><div class="grid md:grid-cols-3 gap-6"><div class="p-6 bg-white border-t-4 border-blue-900 rounded-xl shadow-md"><div class="text-3xl mb-4">🔍</div><h4 class="font-bold mb-2">1. Gatii Ilaaluuf</h4><p class="text-xs text-gray-500">Gara bitaa (Sidebar) irraa aanaa kee filadhu. Battaluma sana gatii beeyladaa aanaa sanaa ni argita.</p></div><div class="p-6 bg-white border-t-4 border-blue-900 rounded-xl shadow-md"><div class="text-3xl mb-4">⚙️</div><h4 class="font-bold mb-2">2. Filter Gochuuf</h4><p class="text-xs text-gray-500">Filter beeyladaa fayyadamuun gosa barbaadde adda baasii ilaali.</p></div><div class="p-6 bg-white border-t-4 border-blue-900 rounded-xl shadow-md"><div class="text-3xl mb-4">🔐</div><h4 class="font-bold mb-2">3. Admin Login</h4><p class="text-xs text-gray-500">Data Clerks-onni qofti username fi password isaaniin seenanii gatii jijjiiruu danda'u.</p></div></div></div>`;
             openModal(content);
         }
 
         function showPrivacy() {
-            const content = `<div class="bg-gradient-to-br from-green-800 to-teal-700 text-white p-10"><h2 class="text-4xl font-black mb-4 flex items-center gap-3"><i class="fa fa-shield-alt"></i> Privacy & Data Policy</h2><p class="text-green-100 text-lg">Eegumsa ragaa, mirgaa fi itti gaafatamummaa systemichaa.</p></div><div class="p-10 space-y-8"><div class="grid md:grid-cols-3 gap-6"><div class="bg-blue-50 p-6 rounded-2xl border-t-4 border-blue-900"><h4 class="font-bold text-blue-900 mb-3 uppercase tracking-wider">🛠 Master Admin</h4><ul class="text-xs space-y-2 text-gray-700 leading-relaxed"><li>• <b>To'annoo Guutuu:</b> Systemicha hordofuu fi bifa isaa jijjiiruu.</li><li>• <b>User Management:</b> User accounts (Clerks) qopheessuu fi eeyyamuu.</li><li>• <b>Data Integrity:</b> Ragaalee hunda qulqullinaan eeguu fi backup qabachuu.</li></ul></div><div class="bg-orange-50 p-6 rounded-2xl border-t-4 border-orange-500"><h4 class="font-bold text-orange-900 mb-3 uppercase tracking-wider">📝 Data Clerk</h4><ul class="text-xs space-y-2 text-gray-700 leading-relaxed"><li>• <b>Ragaa Galchuu:</b> Aanaa ramadaman irratti gatii beeyladaa sirrii ta'e battalatti galchuu.</li><li>• <b>Amanamummaa:</b> Gatii sobaa (fake price) galchuun dhorkaa dha; tarkaanfiin seeraa ni fudhatama.</li><li>• <b>Eegumsa Password:</b> Password eenyuufiyyuu dabarsanii kennuun dhorkaadha.</li></ul></div><div class="bg-green-50 p-6 rounded-2xl border-t-4 border-green-600"><h4 class="font-bold text-green-900 mb-3 uppercase tracking-wider">👥 Public/Users</h4><ul class="text-xs space-y-2 text-gray-700 leading-relaxed"><li>• <b>Mirga Argachuu:</b> Ragaa gabaa bilisaan argachuu fi fayyadamuu.</li><li>• <b>Itti Fayyadama:</b> Ragaa kana dhimma daldalaa fi qorannoof qofa fayyadamuu.</li><li>• <b>Ibsa:</b> Gatiin kun kan gabaa nannoo sanaa ta'uu hubatanii murtee irra ga'uu.</li></ul></div></div><div class="bg-gray-100 p-4 rounded-xl text-[10px] text-gray-500 italic">Note: Deebii Livestock Market ragaa gabaa giddu-galeessa godhata; jijjiirama gabaa yeroo sanaa wajjiin wal-simuu danda'a.</div></div>`;
+            const content = `<div class="bg-gradient-to-br from-green-800 to-teal-700 text-white p-10"><h2 class="text-4xl font-black mb-4 flex items-center gap-3"><i class="fa fa-shield-alt"></i> Privacy & Data Policy</h2><p class="text-green-100 text-lg">Eegumsa ragaa, mirgaa fi itti gaafatamummaa systemichaa.</p></div><div class="p-10 space-y-8"><div class="grid md:grid-cols-3 gap-6"><div class="bg-blue-50 p-6 rounded-2xl border-t-4 border-blue-900"><h4 class="font-bold text-blue-900 mb-3 uppercase tracking-wider">🛠 Master Admin</h4><ul class="text-xs space-y-2 text-gray-700 leading-relaxed"><li>• To'annoo Guutuu.</li></ul></div><div class="bg-orange-50 p-6 rounded-2xl border-t-4 border-orange-500"><h4 class="font-bold text-orange-900 mb-3 uppercase tracking-wider">📝 Data Clerk</h4><ul class="text-xs space-y-2 text-gray-700 leading-relaxed"><li>• Ragaa sirrii galchuu.</li></ul></div><div class="bg-green-50 p-6 rounded-2xl border-t-4 border-green-600"><h4 class="font-bold text-green-900 mb-3 uppercase tracking-wider">👥 Public/Users</h4><ul class="text-xs space-y-2 text-gray-700 leading-relaxed"><li>• Ragaa bilisaan argachuu.</li></ul></div></div></div>`;
             openModal(content);
         }
 
@@ -340,7 +339,7 @@
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: 'Gatii Giddu-galeessaa (AVG Price)',
+                        label: 'Gatii Giddu-galeessaa (ETB)',
                         data: data,
                         backgroundColor: '#1a237e',
                         borderRadius: 10,
@@ -382,13 +381,16 @@
 
                 marketDataTemplate.forEach(item => {
                     if (filter !== 'All' && item.category !== filter) return;
-                    const subKey = item.sub.replace(/[\/\.]/g, '_');
-                    const prices = liveData[subKey] || { min: 0, mid: 0, max: 0 };
+
+                    // MAQAA JEEQAMU DHOWWUUF: Key keessatti Category daballee ID addaa uumna.
+                    // Fakkeenya: Loon_Hawwicha vs Hoolaa_Hawwicha
+                    const uniqueKey = `${item.category}_${item.sub}`.replace(/[\s\/\.\']/g, '_');
+                    const prices = liveData[uniqueKey] || { min: 0, mid: 0, max: 0 };
+                    
                     const canEdit = currentUser && (currentUser.role === 'admin' || currentUser.woreda === activeWoreda);
                     const imgName = categoryIcons[item.category] || 'Logo.PNG';
 
-                    // Prepare Graph Data (Only top items to keep it clean)
-                    if(prices.mid > 0 && graphLabels.length < 10) {
+                    if(prices.mid > 0) {
                         graphLabels.push(item.sub);
                         graphValues.push(prices.mid);
                     }
@@ -405,7 +407,7 @@
                                 <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-md overflow-hidden border-2 border-white">
                                     <img src="${imgName}" alt="${item.category}" class="w-full h-full object-cover">
                                 </div>
-                                <button onclick="updateData('${item.sub}')" 
+                                <button onclick="updateData('${item.category}', '${item.sub}')" 
                                     class="text-[10px] font-black py-1 px-4 rounded-full transition-all shadow-sm ${canEdit ? 'bg-white text-blue-700 hover:scale-105' : 'bg-gray-100 text-gray-400 cursor-not-allowed'}">
                                     ${canEdit ? '<i class="fa fa-pen mr-1"></i> EDIT' : '<i class="fa fa-lock mr-1"></i> READ'}
                                 </button>
@@ -430,69 +432,45 @@
             });
         }
 
-        window.updateAnalysis = function() {
+        function updateData(category, sub) {
             const activeWoreda = document.getElementById('current-location').innerText;
-            if (!currentUser || (currentUser.role !== 'admin' && currentUser.woreda !== activeWoreda)) {
-                alert("Hayyama hin qabdu!"); return;
-            }
             const woredaKey = activeWoreda.replace(/\s+/g, '_');
-            const s = prompt("Supply (Gatii Dhiyeessii):", document.getElementById('ana-supply').innerText);
-            const d = prompt("Demand (Barbaacha):", document.getElementById('ana-demand').innerText);
-            const t = prompt("Trend (Haala adeemsaa):", document.getElementById('ana-trend').innerText);
-            
-            if(s && d && t) {
-                window.dbSet(window.dbRef(window.db, 'analysis/' + woredaKey), { supply: s, demand: d, trend: t })
-                .then(() => alert("Xiinxalli gabaa uppdate ta'eera!"));
+            const uniqueKey = `${category}_${sub}`.replace(/[\s\/\.\']/g, '_');
+
+            const min = parseInt(prompt(`Gatii Xiqqaa (MIN) ${category} - ${sub} galchi:`, "0")) || 0;
+            const mid = parseInt(prompt(`Gatii Giddu-galeessaa (AVG) ${category} - ${sub} galchi:`, "0")) || 0;
+            const max = parseInt(prompt(`Gatii Ol-aanaa (MAX) ${category} - ${sub} galchi:`, "0")) || 0;
+
+            if (min > 0 || mid > 0 || max > 0) {
+                window.dbSet(window.dbRef(window.db, `markets/${woredaKey}/${uniqueKey}`), { min, mid, max })
+                .then(() => alert("Ragaan milkiidhaan galmaa'era!"))
+                .catch(err => alert("Rakkoon uumame: " + err.message));
             }
         }
 
-        window.updateData = function(sub) {
+        function quickUpdate(field) {
+            if(!currentUser) return;
             const activeWoreda = document.getElementById('current-location').innerText;
-            if (!currentUser || (currentUser.role !== 'admin' && currentUser.woreda !== activeWoreda)) {
-                alert("Aanaa kee qofarratti gatii jijjiiruu dandeessa!"); return;
-            }
             const woredaKey = activeWoreda.replace(/\s+/g, '_');
-            const subKey = sub.replace(/[\/\.]/g, '_');
-            
-            const min = parseInt(prompt(`Gatii Xiqqaa (Min) ${sub}:`, 0));
-            const mid = parseInt(prompt(`Gatii Giddu-galeessaa (AVG) ${sub}:`, 0));
-            const max = parseInt(prompt(`Gatii Guddaa (Max) ${sub}:`, 0));
-
-            if (!isNaN(min) && !isNaN(mid) && !isNaN(max)) {
-                window.dbSet(window.dbRef(window.db, `markets/${woredaKey}/${subKey}`), { min, mid, max })
-                .then(() => alert("Gatiin milkaa'inaan jijjiirameera!"));
-            }
-        };
-
-        window.quickUpdate = function(type) {
-            const activeWoreda = document.getElementById('current-location').innerText;
-            if (!currentUser || (currentUser.role !== 'admin' && currentUser.woreda !== activeWoreda)) return;
-            const woredaKey = activeWoreda.replace(/\s+/g, '_');
-            const newVal = prompt(`Update ${type.toUpperCase()}:`, document.getElementById(`ana-${type}`).innerText);
-            if(newVal) {
-                const currentData = {
-                    supply: document.getElementById('ana-supply').innerText,
-                    demand: document.getElementById('ana-demand').innerText,
-                    trend: document.getElementById('ana-trend').innerText
-                };
-                currentData[type] = newVal;
-                window.dbSet(window.dbRef(window.db, 'analysis/' + woredaKey), currentData);
+            const val = prompt(`Haala ${field} haaraa galchi:`);
+            if(val) {
+                window.dbSet(window.dbRef(window.db, `analysis/${woredaKey}/${field}`), val);
             }
         }
 
-        window.exportToExcel = function() {
-            if(currentExcelData.length === 0) return alert("Data-n hin jiru!");
-            const ws = XLSX.utils.json_to_sheet(currentExcelData);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "MarketData");
-            XLSX.writeFile(wb, `Deebii_Market_${document.getElementById('current-location').innerText}.xlsx`);
+        function updateAnalysis() {
+            quickUpdate('supply');
+            quickUpdate('demand');
+            quickUpdate('trend');
+        }
+
+        function exportToExcel() {
+            if (currentExcelData.length === 0) return alert("Ragaan download ta'u hin jiru!");
+            const worksheet = XLSX.utils.json_to_sheet(currentExcelData);
+            const workbook = XLSX.utils.book_new();
+            XXLSX.utils.book_append_sheet(workbook, worksheet, "Market Data");
+            XXLSX.writeFile(workbook, `Deebii_Market_${document.getElementById('current-location').innerText}.xlsx`);
         }
     </script>
 </body>
 </html>
-
-
-
-
-
-
